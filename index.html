@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News Portal - 最新情報</title>
+  <!-- Tailwind CSSをCDNから読み込み -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    
+    body {
+      
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', Meiryo, system-ui, -apple-system, sans-serif;
+      color: #333;
+    }
+    
+    
+    .aero-panel {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      border-radius: 12px;
+    }
+
+    .aero-header {
+      background: rgba(255, 255, 255, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .news-content {
+      white-space: pre-wrap; /* 改行を反映 */
+      line-height: 1.6;
+    }
+
+    .media-container {
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 1rem;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  
+  <header class="aero-header fixed top-0 w-full z-50 transition-all duration-300">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-light tracking-wider text-blue-900">
+        <span class="font-bold">News</span>Portal
+      </h1>
+      <nav class="text-sm text-gray-600">
+        Updated Real-time
+      </nav>
+    </div>
+  </header>
+
+  
+  <main class="pt-24 pb-12 px-4 max-w-4xl mx-auto">
+    
+    <div class="mb-8">
+      <h2 class="text-xl font-medium text-gray-700 mb-2">最新のニュース</h2>
+      <p class="text-sm text-gray-500">運営からのお知らせや最新情報を配信しています。</p>
+    </div>
+
+   
+    <div id="newsContainer" class="space-y-6">
+      <div id="loadingIndicator" class="text-center py-10 text-gray-500">
+        <svg class="animate-spin h-8 w-8 mx-auto mb-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        情報を取得しています...
+      </div>
+    </div>
+
+  </main>
+
+  
+  <template id="newsCardTemplate">
+    <article class="aero-panel p-6 transition-transform hover:-translate-y-1 hover:shadow-lg duration-300">
+      <header class="mb-4">
+        <time class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1 block date-display"></time>
+        <h3 class="text-2xl font-bold text-gray-800 leading-tight title-display"></h3>
+      </header>
+      
+      <div class="text-gray-700 news-content content-display mb-4"></div>
+
+      
+      <div class="media-container image-area hidden">
+        <img src="" alt="ニュース画像" class="w-full h-auto object-cover max-h-96 image-display">
+      </div>
+
+
+      <div class="media-container video-area hidden aspect-video relative">
+        <iframe src="" class="absolute top-0 left-0 w-full h-full video-display" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </article>
+  </template>
+
+  <script>
+    // Cloudflare WorkersのAPIエンドポイント（実際のものに書き換えてください）
+    const API_ENDPOINT = 'https://your-api-worker.your-subdomain.workers.dev/api/news';
+
+    // 日付フォーマット関数
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      return `${date.getFullYear()}年${String(date.getMonth() + 1).padStart(2, '0')}月${String(date.getDate()).padStart(2, '0')}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    }
+
+    // ニュースを描画する関数
+    function renderNews(newsDataArray) {
+      const container = document.getElementById('newsContainer');
+      const template = document.getElementById('newsCardTemplate');
+      const loading = document.getElementById('loadingIndicator');
+
+      if (loading) loading.remove();
+
+      if (newsDataArray.length === 0) {
+        container.innerHTML = '<div class="aero-panel p-8 text-center text-gray-500">現在、ニュースはありません。</div>';
+        return;
+      }
+
+      newsDataArray.forEach(news => {
+        const clone = template.content.cloneNode(true);
+        
+        clone.querySelector('.date-display').textContent = formatDate(news.createdAt);
+        clone.querySelector('.title-display').textContent = news.title;
+        clone.querySelector('.content-display').textContent = news.content;
+
+        // 画像の処理
+        if (news.imageUrl && news.imageUrl.trim() !== '') {
+          const imgArea = clone.querySelector('.image-area');
+          const img = clone.querySelector('.image-display');
+          img.src = news.imageUrl;
+          // エラー時のフォールバック
+          img.onerror = () => { imgArea.style.display = 'none'; };
+          imgArea.classList.remove('hidden');
+        }
+
+        // 動画の処理 (YouTubeなどのiframe想定)
+        if (news.videoUrl && news.videoUrl.trim() !== '') {
+          const videoArea = clone.querySelector('.video-area');
+          const iframe = clone.querySelector('.video-display');
+          
+          // YouTubeの通常URLを埋め込み用URLに変換する簡易ロジック
+          let embedUrl = news.videoUrl;
+          if(embedUrl.includes('youtube.com/watch?v=')) {
+              embedUrl = embedUrl.replace('watch?v=', 'embed/');
+          } else if(embedUrl.includes('youtu.be/')) {
+              embedUrl = embedUrl.replace('youtu.be/', 'youtube.com/embed/');
+          }
+          
+          iframe.src = embedUrl;
+          videoArea.classList.remove('hidden');
+        }
+
+        container.appendChild(clone);
+      });
+    }
+
+    // APIからデータを取得する関数
+    async function fetchNews() {
+      try {
+        /* ==== 実際の実装ではこのブロックのコメントアウトを外します ====
+        const response = await fetch(API_ENDPOINT);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        // データの降順ソート（最新を上に）
+        data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        renderNews(data);
+        return;
+        ========================================================= */
+
+        // デモ用のモックデータ（API接続前のUI確認用）
+        await new Promise(resolve => setTimeout(resolve, 800)); // 通信をシミュレート
+        const mockData = [
+          {
+            id: 1,
+            title: "新デザインのニュースポータルを公開しました！",
+            content: "皆様により快適に情報を取得していただくため、Windows Aeroをモチーフにした白基調のすっきりとしたデザインにリニューアルいたしました。\n\nすりガラス効果を取り入れ、視認性と美しさを両立しています。今後は画像や動画を用いたリッチなコンテンツも配信予定です。",
+            imageUrl: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            videoUrl: "",
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 2,
+            title: "【動画あり】次世代のWeb技術に関するカンファレンス開催",
+            content: "Cloudflare D1とWorkersを用いたエッジコンピューティングの実践例について解説するカンファレンスが開催されました。\nデータベースの構築からフロントエンドの展開まで、サーバーレスで完結するモダンな開発手法が話題となりました。",
+            imageUrl: "",
+            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // サンプル動画
+            createdAt: new Date(Date.now() - 86400000).toISOString() // 1日前
+          }
+        ];
+        renderNews(mockData);
+
+      } catch (error) {
+        console.error('ニュースの取得に失敗しました:', error);
+        document.getElementById('newsContainer').innerHTML = `
+          <div class="aero-panel p-8 text-center text-red-500">
+            データの読み込みに失敗しました。時間をおいて再度お試しください。
+          </div>
+        `;
+      }
+    }
+
+    // ページ読み込み時にニュースを取得
+    document.addEventListener('DOMContentLoaded', fetchNews);
+  </script>
+</body>
+</html>
