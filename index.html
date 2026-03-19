@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aero News Suite</title>
+    <title>Aero News - 閲覧</title>
     <!-- Tailwind CSS を CDN から読み込み -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Windows Aero / Glassmorphism 風のスタイル */
+        /* =========================================
+           閲覧モード用スタイル (Windows Aero風)
+           ========================================= */
         body {
-            /* 美しい青空やオーロラのような背景グラデーション */
             background: linear-gradient(135deg, #8bc6ec 0%, #9599e2 100%);
             background-attachment: fixed;
             font-family: "Segoe UI", "Meiryo", "メイリオ", sans-serif;
             min-height: 100vh;
             color: #1a1a1a;
+            margin: 0;
+            padding: 0;
         }
 
-        /* ヘッダーのガラス効果 */
         .glass-panel {
             background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(20px);
@@ -35,7 +37,6 @@
             z-index: 50;
         }
 
-        /* ニュースカードのガラス効果 */
         .glass-card {
             background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(12px);
@@ -56,19 +57,16 @@
             background: rgba(255, 255, 255, 0.65);
         }
 
-        /* おすすめカード（少し目立たせる） */
         .recommended-card {
-            background: rgba(255, 248, 220, 0.6); /* ほんのり黄色みがかったガラス */
+            background: rgba(255, 248, 220, 0.6);
             border-top: 1px solid rgba(255, 255, 255, 1);
         }
 
-        /* タイトルの輝き効果 */
         .aero-title {
             color: #0f3057;
             text-shadow: 0 2px 4px rgba(255,255,255,0.9);
         }
 
-        /* コントロール（検索・タブ） */
         .glass-input {
             background: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -94,9 +92,7 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-        .category-btn:hover {
-            background: rgba(255, 255, 255, 0.7);
-        }
+        .category-btn:hover { background: rgba(255, 255, 255, 0.7); }
         .category-btn.active {
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -104,7 +100,6 @@
             border-color: #fff;
         }
 
-        /* メディアエリア */
         .media-container {
             width: 100%;
             height: 180px;
@@ -115,20 +110,14 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.4);
             position: relative;
         }
-        .recommended-card .media-container {
-            height: 220px; /* おすすめは少し大きく */
-        }
+        .recommended-card .media-container { height: 220px; }
         .media-container img, .media-container iframe {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 100%; height: 100%; object-fit: cover;
         }
 
-        /* カテゴリーバッジ */
         .category-badge {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 10px; left: 10px;
             background: rgba(0, 0, 0, 0.6);
             color: white;
             padding: 2px 8px;
@@ -137,88 +126,70 @@
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255,255,255,0.3);
         }
-
-        /* スクロールバー */
-        ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
-        ::-webkit-scrollbar-thumb { 
-            background: rgba(255,255,255,0.6); 
-            border-radius: 5px; 
-            border: 1px solid rgba(255,255,255,0.8);
-        }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.8); }
     </style>
 </head>
 <body>
 
-    <!-- ヘッダー -->
-    <header class="glass-panel glass-header py-4 px-6 mb-6">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h1 class="text-2xl md:text-3xl font-bold aero-title flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" />
-                </svg>
-                Aero News Suite
-            </h1>
-            <div class="text-sm font-semibold text-gray-800 bg-white bg-opacity-40 px-3 py-1 rounded-full border border-white">
-                <span id="current-date"></span>
+    <div id="view-mode">
+        <!-- ヘッダー -->
+        <header class="glass-panel glass-header py-4 px-6 mb-6">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+                <h1 class="text-2xl md:text-3xl font-bold aero-title flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" />
+                    </svg>
+                    Aero News Suite
+                </h1>
+                <div class="text-sm font-semibold text-gray-800 bg-white bg-opacity-40 px-3 py-1 rounded-full border border-white">
+                    <span id="current-date"></span>
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        
-        <!-- コントロールバー（検索＆カテゴリー） -->
-        <div class="glass-panel rounded-2xl p-4 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <!-- カテゴリータブ -->
-            <div id="category-tabs" class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                <button class="category-btn active" data-category="all">すべて</button>
-                <button class="category-btn" data-category="総合">総合</button>
-                <button class="category-btn" data-category="IT・テック">IT・テック</button>
-                <button class="category-btn" data-category="エンタメ">エンタメ</button>
-                <button class="category-btn" data-category="スポーツ">スポーツ</button>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+            <!-- コントロールバー（検索＆カテゴリー） -->
+            <div class="glass-panel rounded-2xl p-4 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div id="category-tabs" class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                    <button class="category-btn active" data-category="all">すべて</button>
+                    <button class="category-btn" data-category="総合">総合</button>
+                    <button class="category-btn" data-category="IT・テック">IT・テック</button>
+                    <button class="category-btn" data-category="エンタメ">エンタメ</button>
+                    <button class="category-btn" data-category="スポーツ">スポーツ</button>
+                </div>
+                <div class="w-full md:w-64 relative">
+                    <input type="text" id="search-input" placeholder="ニュースを検索..." class="glass-input w-full pl-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
             </div>
-            
-            <!-- 検索バー -->
-            <div class="w-full md:w-64 relative">
-                <input type="text" id="search-input" placeholder="ニュースを検索..." class="glass-input w-full pl-10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </div>
-        </div>
 
-        <div id="loading" class="text-center py-20">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-            <p class="aero-title text-lg font-bold">ニュースを受信中...</p>
-        </div>
-
-        <!-- おすすめエリア (検索時や別カテゴリー選択時は非表示にする) -->
-        <section id="recommended-section" class="mb-12 hidden">
-            <h2 class="text-2xl font-bold aero-title mb-4 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                ピックアップ
-            </h2>
-            <div id="recommended-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- おすすめカード挿入用 -->
+            <div id="loading" class="text-center py-20">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+                <p class="aero-title text-lg font-bold">ニュースを受信中...</p>
             </div>
-        </section>
 
-        <!-- 通常のニュース一覧エリア -->
-        <section id="latest-section" class="hidden">
-            <h2 id="list-title" class="text-2xl font-bold aero-title mb-4">📰 最新ニュース</h2>
-            <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- ニュースカード挿入用 -->
-            </div>
-            
-            <div id="empty-state" class="text-center py-16 hidden glass-panel rounded-2xl">
-                <p class="text-gray-700 text-lg font-bold">該当するニュースが見つかりません。</p>
-            </div>
-        </section>
+            <!-- おすすめエリア -->
+            <section id="recommended-section" class="mb-12 hidden">
+                <h2 class="text-2xl font-bold aero-title mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    ピックアップ
+                </h2>
+                <div id="recommended-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </section>
 
-    </main>
+            <!-- 通常のニュース一覧エリア -->
+            <section id="latest-section" class="hidden">
+                <h2 id="list-title" class="text-2xl font-bold aero-title mb-4">📰 最新ニュース</h2>
+                <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <div id="empty-state" class="text-center py-16 hidden glass-panel rounded-2xl">
+                    <p class="text-gray-700 text-lg font-bold">該当するニュースが見つかりません。</p>
+                </div>
+            </section>
+        </main>
+    </div>
 
     <!-- Firebase SDK (ES Modules) -->
     <script type="module">
@@ -226,19 +197,17 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        
-        const firebaseConfig = {
-  apiKey: "AIzaSyAcYxXbssrZmx0e8-9e2qy2C6ftX-X8ijg",
-  authDomain: "mediatest-v01c.firebaseapp.com",
-  projectId: "mediatest-v01c",
-  storageBucket: "mediatest-v01c.firebasestorage.app",
-  messagingSenderId: "1008340252538",
-  appId: "1:1008340252538:web:4b4613e10647053fc2c8c3",
-  measurementId: "G-GP9YH6WSJP"
-};
+        let firebaseConfig = {
+            apiKey: "AIzaSyAcYxXbssrZmx0e8-9e2qy2C6ftX-X8ijg",
+            authDomain: "mediatest-v01c.firebaseapp.com",
+            projectId: "mediatest-v01c",
+            storageBucket: "mediatest-v01c.firebasestorage.app",
+            messagingSenderId: "1008340252538",
+            appId: "1:1008340252538:web:4b4613e10647053fc2c8c3",
+            measurementId: "G-GP9YH6WSJP"
+        };
 
-        let firebaseConfig = defaultFirebaseConfig;
-        if (typeof __firebase_config !== 'undefined') {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
             firebaseConfig = JSON.parse(__firebase_config);
         }
 
@@ -247,9 +216,7 @@
         const db = getFirestore(app);
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'my-custom-news';
-        const newsCollectionPath = typeof __app_id !== 'undefined' 
-            ? `artifacts/${appId}/public/data/news` 
-            : 'news';
+        const newsCollectionPath = `artifacts/${appId}/public/data/news`;
 
         // UI要素の取得
         const loadingEl = document.getElementById('loading');
@@ -262,55 +229,18 @@
         const categoryBtns = document.querySelectorAll('.category-btn');
         const listTitle = document.getElementById('list-title');
 
-        // アプリケーションの状態（State）
         let allNews = [];
         let currentCategory = 'all';
         let searchQuery = '';
 
-        // 日付表示
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
-        // 初期化処理
-        async function init() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    const { signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                // Firestoreからリアルタイムでデータを全件取得
-                const newsRef = collection(db, newsCollectionPath);
-                onSnapshot(newsRef, (snapshot) => {
-                    loadingEl.classList.add('hidden');
-                    
-                    allNews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    // 日付の降順（新しい順）にソート
-                    allNews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                    
-                    applyFiltersAndRender();
-                }, (error) => {
-                    console.error("データ取得エラー:", error);
-                    loadingEl.innerHTML = `<p class="text-red-600 font-bold">データの読み込みに失敗しました。</p>`;
-                });
-
-            } catch (error) {
-                console.error("認証エラー:", error);
-                loadingEl.innerHTML = `<p class="text-red-600 font-bold">システムに接続できません。</p>`;
-            }
-        }
-
-        // 状態に基づいてニュースをフィルタリングし、描画する
         function applyFiltersAndRender() {
             let filteredNews = allNews;
 
-            // 1. カテゴリーで絞り込み
             if (currentCategory !== 'all') {
                 filteredNews = filteredNews.filter(n => n.category === currentCategory);
             }
-
-            // 2. 検索キーワードで絞り込み
             if (searchQuery) {
                 const q = searchQuery.toLowerCase();
                 filteredNews = filteredNews.filter(n => 
@@ -321,10 +251,7 @@
 
             latestSection.classList.remove('hidden');
 
-            // --- おすすめエリアの表示制御 ---
-            // 「すべて」タブかつ「検索キーワードなし」の時だけおすすめを表示する
             if (currentCategory === 'all' && !searchQuery) {
-                // isRecommendedフラグがtrueのものだけを抽出
                 const recommendedNews = allNews.filter(n => n.isRecommended === true);
                 if (recommendedNews.length > 0) {
                     recommendedSection.classList.remove('hidden');
@@ -334,11 +261,10 @@
                 }
                 listTitle.innerText = "📰 最新ニュース";
             } else {
-                recommendedSection.classList.add('hidden'); // おすすめ非表示
+                recommendedSection.classList.add('hidden');
                 listTitle.innerText = searchQuery ? `🔍 「${searchQuery}」の検索結果` : `📰 ${currentCategory}のニュース`;
             }
 
-            // --- 一覧エリアの表示制御 ---
             if (filteredNews.length === 0) {
                 newsGrid.classList.add('hidden');
                 emptyState.classList.remove('hidden');
@@ -349,10 +275,8 @@
             }
         }
 
-        // カードのHTML生成・描画共通関数
         function renderCards(newsList, container, isRecommendedCard) {
             container.innerHTML = '';
-            
             newsList.forEach(news => {
                 const dateStr = news.createdAt 
                     ? new Date(news.createdAt).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) 
@@ -360,7 +284,6 @@
                 const categoryStr = news.category || '未分類';
                 const cardClass = isRecommendedCard ? 'glass-card recommended-card' : 'glass-card';
 
-                // メディアHTMLの生成
                 let mediaHtml = '';
                 if (news.youtubeId) {
                     mediaHtml = `
@@ -378,14 +301,13 @@
                     mediaHtml = `
                         <div class="media-container">
                             <span class="category-badge">${categoryStr}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" />
-                            </svg>
+                            <div style="width:100%;height:100%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;">
+                                <span style="color:#555;font-weight:bold;">No Image</span>
+                            </div>
                         </div>`;
                 }
 
                 const formattedContent = news.content ? news.content.replace(/\n/g, '<br>') : '';
-                // 記事の長さを制限（UI崩れ防止）
                 const displayContent = formattedContent.length > 150 ? formattedContent.substring(0, 150) + '...' : formattedContent;
 
                 const cardHtml = `
@@ -405,27 +327,48 @@
             });
         }
 
-        // --- イベントリスナーの登録 ---
-
-        // 検索入力時のイベント
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
             applyFiltersAndRender();
         });
 
-        // カテゴリータブのクリックイベント
         categoryBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // アクティブ状態の切り替え
                 categoryBtns.forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
-                
                 currentCategory = e.target.getAttribute('data-category');
                 applyFiltersAndRender();
             });
         });
 
-        // アプリ起動
+        async function init() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const { signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                const newsRef = collection(db, newsCollectionPath);
+                onSnapshot(newsRef, (snapshot) => {
+                    loadingEl.classList.add('hidden');
+                    
+                    allNews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    allNews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    
+                    applyFiltersAndRender();
+                }, (error) => {
+                    console.error("データ取得エラー:", error);
+                    loadingEl.innerHTML = `<p class="text-red-600 font-bold">データの読み込みに失敗しました。</p>`;
+                });
+
+            } catch (error) {
+                console.error("認証エラー:", error);
+                loadingEl.innerHTML = `<p class="text-red-600 font-bold">システムに接続できませんでした。</p>`;
+            }
+        }
+
         init();
     </script>
 </body>
