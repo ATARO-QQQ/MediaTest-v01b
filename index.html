@@ -32,7 +32,7 @@
         .glass-header {
             position: sticky;
             top: 0;
-            z-index: 50;
+            z-index: 40;
         }
         .glass-card {
             background: rgba(255, 255, 255, 0.5);
@@ -116,6 +116,11 @@
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255,255,255,0.3);
         }
+        
+        /* モーダル表示時の背景固定用 */
+        body.modal-open {
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -171,7 +176,7 @@
 
             <!-- 通常のニュース一覧エリア -->
             <section id="latest-section" class="hidden">
-                <h2 id="list-title" class="text-2xl font-bold aero-title mb-4">📰 最新ニュース</h2>
+                <h2 id="list-title" class="text-2xl font-bold aero-title mb-4">最新ニュース</h2>
                 <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 <div id="empty-state" class="text-center py-16 hidden glass-panel rounded-2xl">
                     <p class="text-gray-700 text-lg font-bold">該当するニュースが見つかりません。</p>
@@ -180,28 +185,41 @@
         </main>
     </div>
 
+    <!-- ニュース詳細表示用モーダル -->
+    <div id="news-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black bg-opacity-40 backdrop-blur-sm transition-opacity">
+        <div class="glass-panel w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl flex flex-col relative bg-white bg-opacity-90">
+            <button id="close-modal-btn" class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-2 transition-colors z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div id="modal-content-area" class="p-6 md:p-10">
+                <!-- コンテンツがJavaScriptによって動的に挿入されます -->
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
-  apiKey: "AIzaSyDQDL4MoMnXFX9CQ_iA00Q7HJETID_ZDLk",
-  authDomain: "mediatest-v01c-f9bea.firebaseapp.com",
-  projectId: "mediatest-v01c-f9bea",
-  storageBucket: "mediatest-v01c-f9bea.firebasestorage.app",
-  messagingSenderId: "1074645734117",
-  appId: "1:1074645734117:web:56ee5b96c3209ea9f23a0c",
-  measurementId: "G-FKT8FYDQ1D"
-};
+            apiKey: "AIzaSyDQDL4MoMnXFX9CQ_iA00Q7HJETID_ZDLk",
+            authDomain: "mediatest-v01c-f9bea.firebaseapp.com",
+            projectId: "mediatest-v01c-f9bea",
+            storageBucket: "mediatest-v01c-f9bea.firebasestorage.app",
+            messagingSenderId: "1074645734117",
+            appId: "1:1074645734117:web:56ee5b96c3209ea9f23a0c",
+            measurementId: "G-FKT8FYDQ1D"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // 保存先のコレクション名（管理画面と揃える）
         const newsCollectionPath = "news";
-
+        
         const loadingEl = document.getElementById('loading');
         const loadingText = document.getElementById('loading-text');
         const recommendedSection = document.getElementById('recommended-section');
@@ -212,6 +230,8 @@
         const searchInput = document.getElementById('search-input');
         const categoryBtns = document.querySelectorAll('.category-btn');
         const listTitle = document.getElementById('list-title');
+        const modal = document.getElementById('news-modal');
+        const modalContentArea = document.getElementById('modal-content-area');
 
         let allNews = [];
         let currentCategory = 'all';
@@ -226,6 +246,7 @@
             if (currentCategory !== 'all') {
                 filteredNews = filteredNews.filter(n => n.category === currentCategory);
             }
+
             if (searchQuery) {
                 const q = searchQuery.toLowerCase();
                 filteredNews = filteredNews.filter(n => 
@@ -244,10 +265,10 @@
                 } else {
                     recommendedSection.classList.add('hidden');
                 }
-                listTitle.innerText = "📰 最新ニュース";
+                listTitle.innerText = "最新ニュース";
             } else {
                 recommendedSection.classList.add('hidden');
-                listTitle.innerText = searchQuery ? `🔍 「${searchQuery}」の検索結果` : `📰 ${currentCategory}のニュース`;
+                listTitle.innerText = searchQuery ? `「${searchQuery}」の検索結果` : `${currentCategory}のニュース`;
             }
 
             if (filteredNews.length === 0) {
@@ -262,6 +283,7 @@
 
         function renderCards(newsList, container, isRecommendedCard) {
             container.innerHTML = '';
+
             newsList.forEach(news => {
                 const dateStr = news.createdAt 
                     ? new Date(news.createdAt).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) 
@@ -274,7 +296,12 @@
                     mediaHtml = `
                         <div class="media-container">
                             <span class="category-badge">${categoryStr}</span>
-                            <iframe src="https://www.youtube.com/embed/${news.youtubeId}" frameborder="0" allowfullscreen></iframe>
+                            <img src="https://img.youtube.com/vi/${news.youtubeId}/hqdefault.jpg" alt="Video Thumbnail" class="opacity-80">
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div class="bg-red-600 rounded-full w-12 h-12 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"></path></svg>
+                                </div>
+                            </div>
                         </div>`;
                 } else if (news.imageUrl) {
                     mediaHtml = `
@@ -293,7 +320,7 @@
                 }
 
                 const formattedContent = news.content ? news.content.replace(/\n/g, '<br>') : '';
-                const displayContent = formattedContent.length > 150 ? formattedContent.substring(0, 150) + '...' : formattedContent;
+                const displayContent = formattedContent.length > 120 ? formattedContent.substring(0, 120) + '...' : formattedContent;
 
                 const cardHtml = `
                     <article class="${cardClass}">
@@ -303,7 +330,7 @@
                             <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-2 leading-tight">${news.title}</h2>
                             <p class="text-gray-700 text-sm leading-relaxed flex-1">${displayContent}</p>
                             <div class="mt-4 pt-3 border-t border-white border-opacity-50 text-right">
-                                <button class="text-sm text-blue-700 hover:text-blue-900 font-bold transition-colors">続きを読む ＞</button>
+                                <button class="read-more-btn text-sm text-blue-700 hover:text-blue-900 font-bold transition-colors py-2 px-4 rounded hover:bg-white hover:bg-opacity-50" data-id="${news.id}">続きを読む ＞</button>
                             </div>
                         </div>
                     </article>
@@ -312,6 +339,65 @@
             });
         }
 
+        // --- モーダル表示機能 ---
+        function openNewsModal(newsId) {
+            const news = allNews.find(n => n.id === newsId);
+            if (!news) return;
+
+            const dateStr = news.createdAt 
+                ? new Date(news.createdAt).toLocaleString('ja-JP', { year: 'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' }) 
+                : '';
+
+            let mediaHtml = '';
+            if (news.youtubeId) {
+                mediaHtml = `
+                    <div class="w-full aspect-video mb-6 rounded-lg overflow-hidden shadow-md bg-black">
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/${news.youtubeId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>`;
+            } else if (news.imageUrl) {
+                mediaHtml = `
+                    <div class="w-full mb-6 rounded-lg overflow-hidden shadow-md text-center bg-gray-100">
+                        <img src="${news.imageUrl}" alt="Image" class="max-w-full h-auto max-h-[50vh] mx-auto inline-block object-contain">
+                    </div>`;
+            }
+
+            const formattedContent = news.content ? news.content.replace(/\n/g, '<br>') : '';
+
+            modalContentArea.innerHTML = `
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-bold border border-blue-200">${news.category || '未分類'}</span>
+                    <span class="text-gray-600 font-medium text-sm">${dateStr}</span>
+                </div>
+                <h2 class="text-2xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">${news.title}</h2>
+                ${mediaHtml}
+                <div class="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">${formattedContent}</div>
+            `;
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeNewsModal() {
+            modal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+            modalContentArea.innerHTML = ''; // YouTubeの再生を止めるため内容をクリア
+        }
+
+        // イベントリスナー: 続きを読むボタン（イベントデリゲーション）
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('read-more-btn')) {
+                const newsId = e.target.getAttribute('data-id');
+                openNewsModal(newsId);
+            }
+        });
+
+        // モーダルを閉じる処理
+        document.getElementById('close-modal-btn').addEventListener('click', closeNewsModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeNewsModal(); // 背景クリックで閉じる
+        });
+
+        // --- フィルター操作 ---
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
             applyFiltersAndRender();
@@ -331,10 +417,9 @@
             if (user) {
                 loadingText.innerText = "ニュースを受信中...";
                 
-                // 既存のリスナーがあれば解除
                 if (unsubscribeSnapshot) unsubscribeSnapshot();
-
                 const newsRef = collection(db, newsCollectionPath);
+                
                 unsubscribeSnapshot = onSnapshot(newsRef, (snapshot) => {
                     loadingEl.classList.add('hidden');
                     
@@ -351,7 +436,6 @@
             }
         });
 
-        // 匿名認証でログイン（※Firestoreルールで要許可）
         signInAnonymously(auth).catch((error) => {
             console.error("認証エラー:", error);
             loadingEl.innerHTML = `<p class="text-red-600 font-bold bg-white bg-opacity-80 p-4 rounded-xl inline-block">Firebaseの認証に失敗しました。<br>設定を確認してください。</p>`;
