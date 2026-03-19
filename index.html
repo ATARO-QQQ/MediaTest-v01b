@@ -19,7 +19,6 @@
             margin: 0;
             padding: 0;
         }
-
         .glass-panel {
             background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(20px);
@@ -30,13 +29,11 @@
             border-right: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-
         .glass-header {
             position: sticky;
             top: 0;
             z-index: 50;
         }
-
         .glass-card {
             background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(12px);
@@ -50,23 +47,19 @@
             flex-direction: column;
             overflow: hidden;
         }
-
         .glass-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
             background: rgba(255, 255, 255, 0.65);
         }
-
         .recommended-card {
             background: rgba(255, 248, 220, 0.6);
             border-top: 1px solid rgba(255, 255, 255, 1);
         }
-
         .aero-title {
             color: #0f3057;
             text-shadow: 0 2px 4px rgba(255,255,255,0.9);
         }
-
         .glass-input {
             background: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -80,7 +73,6 @@
             background: rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 8px rgba(100, 150, 255, 0.6), inset 0 1px 2px rgba(0,0,0,0.05);
         }
-
         .category-btn {
             background: rgba(255, 255, 255, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.6);
@@ -99,7 +91,6 @@
             color: #0056b3;
             border-color: #fff;
         }
-
         .media-container {
             width: 100%;
             height: 180px;
@@ -114,7 +105,6 @@
         .media-container img, .media-container iframe {
             width: 100%; height: 100%; object-fit: cover;
         }
-
         .category-badge {
             position: absolute;
             top: 10px; left: 10px;
@@ -129,7 +119,6 @@
     </style>
 </head>
 <body>
-
     <div id="view-mode">
         <!-- ヘッダー -->
         <header class="glass-panel glass-header py-4 px-6 mb-6">
@@ -166,7 +155,7 @@
 
             <div id="loading" class="text-center py-20">
                 <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-                <p class="aero-title text-lg font-bold">ニュースを受信中...</p>
+                <p class="aero-title text-lg font-bold" id="loading-text">データベース接続中...</p>
             </div>
 
             <!-- おすすめエリア -->
@@ -191,35 +180,30 @@
         </main>
     </div>
 
-    <!-- Firebase SDK (ES Modules) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        let firebaseConfig = {
-            apiKey: "AIzaSyAcYxXbssrZmx0e8-9e2qy2C6ftX-X8ijg",
-            authDomain: "mediatest-v01c.firebaseapp.com",
-            projectId: "mediatest-v01c",
-            storageBucket: "mediatest-v01c.firebasestorage.app",
-            messagingSenderId: "1008340252538",
-            appId: "1:1008340252538:web:4b4613e10647053fc2c8c3",
-            measurementId: "G-GP9YH6WSJP"
+        // ⚠️【重要】ご自身のFirebaseプロジェクトの設定情報に置き換えてください
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
-
-        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-            firebaseConfig = JSON.parse(__firebase_config);
-        }
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
+        // 保存先のコレクション名（管理画面と揃える）
+        const newsCollectionPath = "news";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'my-custom-news';
-        const newsCollectionPath = `artifacts/${appId}/public/data/news`;
-
-        // UI要素の取得
         const loadingEl = document.getElementById('loading');
+        const loadingText = document.getElementById('loading-text');
         const recommendedSection = document.getElementById('recommended-section');
         const recommendedGrid = document.getElementById('recommended-grid');
         const latestSection = document.getElementById('latest-section');
@@ -232,6 +216,7 @@
         let allNews = [];
         let currentCategory = 'all';
         let searchQuery = '';
+        let unsubscribeSnapshot = null;
 
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
@@ -341,17 +326,16 @@
             });
         });
 
-        async function init() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    const { signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+        // 認証状態の監視とデータ取得開始
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadingText.innerText = "ニュースを受信中...";
+                
+                // 既存のリスナーがあれば解除
+                if (unsubscribeSnapshot) unsubscribeSnapshot();
 
                 const newsRef = collection(db, newsCollectionPath);
-                onSnapshot(newsRef, (snapshot) => {
+                unsubscribeSnapshot = onSnapshot(newsRef, (snapshot) => {
                     loadingEl.classList.add('hidden');
                     
                     allNews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -360,16 +344,18 @@
                     applyFiltersAndRender();
                 }, (error) => {
                     console.error("データ取得エラー:", error);
-                    loadingEl.innerHTML = `<p class="text-red-600 font-bold">データの読み込みに失敗しました。</p>`;
+                    loadingEl.innerHTML = `<p class="text-red-600 font-bold bg-white bg-opacity-80 p-4 rounded-xl inline-block">データの読み込みに失敗しました。<br><span class="text-sm text-gray-700">権限がないか設定が間違っています (${error.code})</span></p>`;
                 });
-
-            } catch (error) {
-                console.error("認証エラー:", error);
-                loadingEl.innerHTML = `<p class="text-red-600 font-bold">システムに接続できませんでした。</p>`;
+            } else {
+                loadingEl.innerHTML = `<p class="text-red-600 font-bold">データベースへの接続が切断されました。</p>`;
             }
-        }
+        });
 
-        init();
+        // 匿名認証でログイン（※Firestoreルールで要許可）
+        signInAnonymously(auth).catch((error) => {
+            console.error("認証エラー:", error);
+            loadingEl.innerHTML = `<p class="text-red-600 font-bold bg-white bg-opacity-80 p-4 rounded-xl inline-block">Firebaseの認証に失敗しました。<br>設定を確認してください。</p>`;
+        });
     </script>
 </body>
 </html>
