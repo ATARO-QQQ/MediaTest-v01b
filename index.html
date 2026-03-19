@@ -185,15 +185,15 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ⚠️【重要】ご自身のFirebaseプロジェクトの設定情報に置き換えてください
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+  apiKey: "AIzaSyDQDL4MoMnXFX9CQ_iA00Q7HJETID_ZDLk",
+  authDomain: "mediatest-v01c-f9bea.firebaseapp.com",
+  projectId: "mediatest-v01c-f9bea",
+  storageBucket: "mediatest-v01c-f9bea.firebasestorage.app",
+  messagingSenderId: "1074645734117",
+  appId: "1:1074645734117:web:56ee5b96c3209ea9f23a0c",
+  measurementId: "G-FKT8FYDQ1D"
+};
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
