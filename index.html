@@ -226,17 +226,16 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ==========================================
-        // 【重要】ご自身のFirebase設定に書き換えてください
-        // ==========================================
-        const defaultFirebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+        
+        const firebaseConfig = {
+  apiKey: "AIzaSyAcYxXbssrZmx0e8-9e2qy2C6ftX-X8ijg",
+  authDomain: "mediatest-v01c.firebaseapp.com",
+  projectId: "mediatest-v01c",
+  storageBucket: "mediatest-v01c.firebasestorage.app",
+  messagingSenderId: "1008340252538",
+  appId: "1:1008340252538:web:4b4613e10647053fc2c8c3",
+  measurementId: "G-GP9YH6WSJP"
+};
 
         let firebaseConfig = defaultFirebaseConfig;
         if (typeof __firebase_config !== 'undefined') {
