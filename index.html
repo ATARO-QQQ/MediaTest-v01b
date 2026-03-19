@@ -19,7 +19,6 @@
             margin: 0;
             padding: 0;
         }
-        
         .glass-panel {
             background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(20px);
@@ -30,13 +29,11 @@
             border-right: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-        
         .glass-header {
             position: sticky;
             top: 0;
-            z-index: 40;
+            z-index: 50;
         }
-        
         .glass-card {
             background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(12px);
@@ -49,25 +46,20 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 100%;
         }
-        
         .glass-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
             background: rgba(255, 255, 255, 0.65);
         }
-        
         .recommended-card {
             background: rgba(255, 248, 220, 0.6);
             border-top: 1px solid rgba(255, 255, 255, 1);
         }
-        
         .aero-title {
             color: #0f3057;
             text-shadow: 0 2px 4px rgba(255,255,255,0.9);
         }
-        
         .glass-input {
             background: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -77,12 +69,10 @@
             transition: all 0.2s;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
-        
         .glass-input:focus {
             background: rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 8px rgba(100, 150, 255, 0.6), inset 0 1px 2px rgba(0,0,0,0.05);
         }
-        
         .category-btn {
             background: rgba(255, 255, 255, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.6);
@@ -94,7 +84,6 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-        
         .category-btn:hover { background: rgba(255, 255, 255, 0.7); }
         .category-btn.active {
             background: rgba(255, 255, 255, 0.95);
@@ -102,7 +91,6 @@
             color: #0056b3;
             border-color: #fff;
         }
-        
         .media-container {
             width: 100%;
             height: 180px;
@@ -113,13 +101,10 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.4);
             position: relative;
         }
-        
         .recommended-card .media-container { height: 220px; }
-        
         .media-container img, .media-container iframe {
             width: 100%; height: 100%; object-fit: cover;
         }
-        
         .category-badge {
             position: absolute;
             top: 10px; left: 10px;
@@ -131,421 +116,246 @@
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255,255,255,0.3);
         }
-
-        /* 記事詳細モーダル用スタイル */
-        #article-modal {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            width: 100%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-top: 1px solid rgba(255, 255, 255, 0.9);
-            border-left: 1px solid rgba(255, 255, 255, 0.7);
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-            position: relative;
-            animation: modalFadeIn 0.3s ease-out;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .modal-close-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            z-index: 10;
-        }
-
-        .modal-close-btn:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: scale(1.05);
-        }
-
-        .modal-media {
-            width: 100%;
-            max-height: 400px;
-            background: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-radius: 16px 16px 0 0;
-        }
-
-        .modal-media img, .modal-media iframe {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            max-height: 400px;
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-        
-        .article-content {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #333;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
-
-<div id="view-mode">
-    <!-- ヘッダー -->
-    <header class="glass-panel glass-header py-4 px-6 mb-6">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h1 class="text-2xl md:text-3xl font-bold aero-title flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" />
-                </svg>
-                Aero News Suite
-            </h1>
-            <div class="text-sm font-semibold text-gray-800 bg-white bg-opacity-40 px-3 py-1 rounded-full border border-white">
-                <span id="current-date"></span>
+    <div id="view-mode">
+        <!-- ヘッダー -->
+        <header class="glass-panel glass-header py-4 px-6 mb-6">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+                <h1 class="text-2xl md:text-3xl font-bold aero-title flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" />
+                    </svg>
+                    Aero News Suite
+                </h1>
+                <div class="text-sm font-semibold text-gray-800 bg-white bg-opacity-40 px-3 py-1 rounded-full border border-white">
+                    <span id="current-date"></span>
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <!-- コントロールバー（検索＆カテゴリー） -->
-        <div class="glass-panel rounded-2xl p-4 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div id="category-tabs" class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                <button class="category-btn active" data-category="all">すべて</button>
-                <button class="category-btn" data-category="総合">総合</button>
-                <button class="category-btn" data-category="IT・テック">IT・テック</button>
-                <button class="category-btn" data-category="エンタメ">エンタメ</button>
-                <button class="category-btn" data-category="スポーツ">スポーツ</button>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+            <!-- コントロールバー（検索＆カテゴリー） -->
+            <div class="glass-panel rounded-2xl p-4 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div id="category-tabs" class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                    <button class="category-btn active" data-category="all">すべて</button>
+                    <button class="category-btn" data-category="総合">総合</button>
+                    <button class="category-btn" data-category="IT・テック">IT・テック</button>
+                    <button class="category-btn" data-category="エンタメ">エンタメ</button>
+                    <button class="category-btn" data-category="スポーツ">スポーツ</button>
+                </div>
+                <div class="w-full md:w-64 relative">
+                    <input type="text" id="search-input" placeholder="ニュースを検索..." class="glass-input w-full pl-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
             </div>
-            
-            <div class="w-full md:w-64 relative">
-                <input type="text" id="search-input" placeholder="ニュースを検索..." class="glass-input w-full pl-10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+
+            <div id="loading" class="text-center py-20">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+                <p class="aero-title text-lg font-bold" id="loading-text">データベース接続中...</p>
             </div>
-        </div>
 
-        <div id="loading" class="text-center py-20">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-            <p class="aero-title text-lg font-bold" id="loading-text">データベース接続中...</p>
-        </div>
+            <!-- おすすめエリア -->
+            <section id="recommended-section" class="mb-12 hidden">
+                <h2 class="text-2xl font-bold aero-title mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    ピックアップ
+                </h2>
+                <div id="recommended-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </section>
 
-        <!-- おすすめエリア -->
-        <section id="recommended-section" class="mb-12 hidden">
-            <h2 class="text-2xl font-bold aero-title mb-4 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                ピックアップ
-            </h2>
-            <div id="recommended-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-        </section>
-
-        <!-- 通常のニュース一覧エリア -->
-        <section id="latest-section" class="hidden">
-            <h2 id="list-title" class="text-2xl font-bold aero-title mb-4">最新ニュース</h2>
-            <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"></div>
-            
-            <div id="empty-state" class="text-center py-16 hidden glass-panel rounded-2xl">
-                <p class="text-gray-700 text-lg font-bold">該当するニュースが見つかりません。</p>
-            </div>
-        </section>
-    </main>
-</div>
-
-<!-- 記事詳細モーダル -->
-<div id="article-modal">
-    <div class="modal-content">
-        <button class="modal-close-btn" id="modal-close">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <div id="modal-media-container" class="modal-media hidden"></div>
-        <div class="modal-body">
-            <div class="flex items-center gap-3 mb-3">
-                <span id="modal-category" class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded border border-blue-400"></span>
-                <span id="modal-date" class="text-sm font-bold text-gray-500"></span>
-            </div>
-            <h1 id="modal-title" class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-tight"></h1>
-            <div id="modal-content" class="article-content"></div>
-        </div>
+            <!-- 通常のニュース一覧エリア -->
+            <section id="latest-section" class="hidden">
+                <h2 id="list-title" class="text-2xl font-bold aero-title mb-4">📰 最新ニュース</h2>
+                <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <div id="empty-state" class="text-center py-16 hidden glass-panel rounded-2xl">
+                    <p class="text-gray-700 text-lg font-bold">該当するニュースが見つかりません。</p>
+                </div>
+            </section>
+        </main>
     </div>
-</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Firebaseの設定
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-        apiKey: "AIzaSyDQDL4MoMnXFX9CQ_iA00Q7HJETID_ZDLk",
-        authDomain: "mediatest-v01c-f9bea.firebaseapp.com",
-        projectId: "mediatest-v01c-f9bea",
-        storageBucket: "mediatest-v01c-f9bea.firebasestorage.app",
-        messagingSenderId: "1074645734117",
-        appId: "1:1074645734117:web:56ee5b96c3209ea9f23a0c"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = {
+  apiKey: "AIzaSyDQDL4MoMnXFX9CQ_iA00Q7HJETID_ZDLk",
+  authDomain: "mediatest-v01c-f9bea.firebaseapp.com",
+  projectId: "mediatest-v01c-f9bea",
+  storageBucket: "mediatest-v01c-f9bea.firebasestorage.app",
+  messagingSenderId: "1074645734117",
+  appId: "1:1074645734117:web:56ee5b96c3209ea9f23a0c",
+  measurementId: "G-FKT8FYDQ1D"
+};
 
-    // DOM要素
-    const loadingEl = document.getElementById('loading');
-    const loadingText = document.getElementById('loading-text');
-    const recommendedSection = document.getElementById('recommended-section');
-    const recommendedGrid = document.getElementById('recommended-grid');
-    const latestSection = document.getElementById('latest-section');
-    const newsGrid = document.getElementById('news-grid');
-    const emptyState = document.getElementById('empty-state');
-    const searchInput = document.getElementById('search-input');
-    const categoryBtns = document.querySelectorAll('.category-btn');
-    const listTitle = document.getElementById('list-title');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // 保存先のコレクション名（管理画面と揃える）
+        const newsCollectionPath = "news";
 
-    // モーダル用DOM
-    const modal = document.getElementById('article-modal');
-    const modalCloseBtn = document.getElementById('modal-close');
-    const modalMediaContainer = document.getElementById('modal-media-container');
-    const modalCategory = document.getElementById('modal-category');
-    const modalDate = document.getElementById('modal-date');
-    const modalTitle = document.getElementById('modal-title');
-    const modalContent = document.getElementById('modal-content');
+        const loadingEl = document.getElementById('loading');
+        const loadingText = document.getElementById('loading-text');
+        const recommendedSection = document.getElementById('recommended-section');
+        const recommendedGrid = document.getElementById('recommended-grid');
+        const latestSection = document.getElementById('latest-section');
+        const newsGrid = document.getElementById('news-grid');
+        const emptyState = document.getElementById('empty-state');
+        const searchInput = document.getElementById('search-input');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const listTitle = document.getElementById('list-title');
 
-    let allNews = [];
-    let currentCategory = 'all';
-    let searchQuery = '';
-    let unsubscribeSnapshot = null;
+        let allNews = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let unsubscribeSnapshot = null;
 
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
-    function applyFiltersAndRender() {
-        let filteredNews = allNews;
+        function applyFiltersAndRender() {
+            let filteredNews = allNews;
 
-        if (currentCategory !== 'all') {
-            filteredNews = filteredNews.filter(n => n.category === currentCategory);
-        }
+            if (currentCategory !== 'all') {
+                filteredNews = filteredNews.filter(n => n.category === currentCategory);
+            }
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filteredNews = filteredNews.filter(n => 
+                    n.title.toLowerCase().includes(q) || 
+                    (n.content && n.content.toLowerCase().includes(q))
+                );
+            }
 
-        if (searchQuery) {
-            const q = searchQuery.toLowerCase();
-            filteredNews = filteredNews.filter(n => 
-                n.title.toLowerCase().includes(q) || 
-                (n.content && n.content.toLowerCase().includes(q))
-            );
-        }
+            latestSection.classList.remove('hidden');
 
-        latestSection.classList.remove('hidden');
-
-        if (currentCategory === 'all' && !searchQuery) {
-            const recommendedNews = allNews.filter(n => n.isRecommended === true);
-            if (recommendedNews.length > 0) {
-                recommendedSection.classList.remove('hidden');
-                renderCards(recommendedNews, recommendedGrid, true);
+            if (currentCategory === 'all' && !searchQuery) {
+                const recommendedNews = allNews.filter(n => n.isRecommended === true);
+                if (recommendedNews.length > 0) {
+                    recommendedSection.classList.remove('hidden');
+                    renderCards(recommendedNews, recommendedGrid, true);
+                } else {
+                    recommendedSection.classList.add('hidden');
+                }
+                listTitle.innerText = "📰 最新ニュース";
             } else {
                 recommendedSection.classList.add('hidden');
+                listTitle.innerText = searchQuery ? `🔍 「${searchQuery}」の検索結果` : `📰 ${currentCategory}のニュース`;
             }
-            listTitle.innerText = "最新ニュース";
-        } else {
-            recommendedSection.classList.add('hidden');
-            listTitle.innerText = searchQuery ? `「${searchQuery}」の検索結果` : `${currentCategory}のニュース`;
+
+            if (filteredNews.length === 0) {
+                newsGrid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                newsGrid.classList.remove('hidden');
+                renderCards(filteredNews, newsGrid, false);
+            }
         }
 
-        if (filteredNews.length === 0) {
-            newsGrid.classList.add('hidden');
-            emptyState.classList.remove('hidden');
-        } else {
-            emptyState.classList.add('hidden');
-            newsGrid.classList.remove('hidden');
-            renderCards(filteredNews, newsGrid, false);
-        }
-    }
+        function renderCards(newsList, container, isRecommendedCard) {
+            container.innerHTML = '';
+            newsList.forEach(news => {
+                const dateStr = news.createdAt 
+                    ? new Date(news.createdAt).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) 
+                    : '';
+                const categoryStr = news.category || '未分類';
+                const cardClass = isRecommendedCard ? 'glass-card recommended-card' : 'glass-card';
 
-    function renderCards(newsList, container, isRecommendedCard) {
-        container.innerHTML = '';
-        
-        newsList.forEach(news => {
-            const dateStr = news.createdAt 
-                ? new Date(news.createdAt).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) 
-                : '';
-            const categoryStr = news.category || '未分類';
-            const cardClass = isRecommendedCard ? 'glass-card recommended-card' : 'glass-card';
+                let mediaHtml = '';
+                if (news.youtubeId) {
+                    mediaHtml = `
+                        <div class="media-container">
+                            <span class="category-badge">${categoryStr}</span>
+                            <iframe src="https://www.youtube.com/embed/${news.youtubeId}" frameborder="0" allowfullscreen></iframe>
+                        </div>`;
+                } else if (news.imageUrl) {
+                    mediaHtml = `
+                        <div class="media-container">
+                            <span class="category-badge">${categoryStr}</span>
+                            <img src="${news.imageUrl}" alt="Image" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22200%22%20viewBox%3D%220%200%20400%20200%22%3E%3Crect%20fill%3D%22rgba(255,255,255,0.3)%22%20width%3D%22400%22%20height%3D%22200%22%2F%3E%3Ctext%20fill%3D%22%23555%22%20font-family%3D%22sans-serif%22%20font-size%3D%2220%22%20dy%3D%2210.5%22%20font-weight%3D%22bold%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                        </div>`;
+                } else {
+                    mediaHtml = `
+                        <div class="media-container">
+                            <span class="category-badge">${categoryStr}</span>
+                            <div style="width:100%;height:100%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;">
+                                <span style="color:#555;font-weight:bold;">No Image</span>
+                            </div>
+                        </div>`;
+                }
 
-            let mediaHtml = '';
-            if (news.youtubeId) {
-                mediaHtml = `
-                    <div class="media-container">
-                        <span class="category-badge">${categoryStr}</span>
-                        <img src="https://img.youtube.com/vi/${news.youtubeId}/hqdefault.jpg" alt="Video Thumbnail" class="object-cover w-full h-full">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="bg-red-600 rounded-full p-2 bg-opacity-80">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                const formattedContent = news.content ? news.content.replace(/\n/g, '<br>') : '';
+                const displayContent = formattedContent.length > 150 ? formattedContent.substring(0, 150) + '...' : formattedContent;
+
+                const cardHtml = `
+                    <article class="${cardClass}">
+                        ${mediaHtml}
+                        <div class="p-5 flex-1 flex flex-col">
+                            <span class="text-xs font-bold text-blue-800 mb-1">${dateStr}</span>
+                            <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-2 leading-tight">${news.title}</h2>
+                            <p class="text-gray-700 text-sm leading-relaxed flex-1">${displayContent}</p>
+                            <div class="mt-4 pt-3 border-t border-white border-opacity-50 text-right">
+                                <button class="text-sm text-blue-700 hover:text-blue-900 font-bold transition-colors">続きを読む ＞</button>
                             </div>
                         </div>
-                    </div>`;
-            } else if (news.imageUrl) {
-                mediaHtml = `
-                    <div class="media-container">
-                        <span class="category-badge">${categoryStr}</span>
-                        <img src="${news.imageUrl}" alt="Image">
-                    </div>`;
-            } else {
-                mediaHtml = `
-                    <div class="media-container">
-                        <span class="category-badge">${categoryStr}</span>
-                        <div style="width:100%;height:100%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;">
-                            <span style="color:#555;font-weight:bold;">No Image</span>
-                        </div>
-                    </div>`;
-            }
-
-            const formattedContent = news.content ? news.content.replace(/\n/g, '<br>') : '';
-            // 一覧表示用には文字数を制限
-            const displayContent = formattedContent.length > 100 ? formattedContent.substring(0, 100) + '...' : formattedContent;
-
-            const card = document.createElement('article');
-            card.className = cardClass;
-            card.innerHTML = `
-                ${mediaHtml}
-                <div class="p-5 flex-1 flex flex-col">
-                    <span class="text-xs font-bold text-blue-800 mb-1">${dateStr}</span>
-                    <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-2 leading-tight line-clamp-2">${news.title}</h2>
-                    <p class="text-gray-700 text-sm leading-relaxed flex-1 overflow-hidden" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">
-                        ${displayContent}
-                    </p>
-                    <div class="mt-4 pt-3 border-t border-white border-opacity-50 text-right">
-                        <button class="read-more-btn text-sm text-blue-700 hover:text-blue-900 font-bold transition-colors">続きを読む ＞</button>
-                    </div>
-                </div>
-            `;
-
-            // 続きを読むボタンのクリックイベント
-            const readMoreBtn = card.querySelector('.read-more-btn');
-            readMoreBtn.addEventListener('click', () => openArticleModal(news));
-
-            container.appendChild(card);
-        });
-    }
-
-    // 記事モーダルを開く処理
-    function openArticleModal(news) {
-        modalTitle.innerText = news.title;
-        modalCategory.innerText = news.category || '未分類';
-        modalDate.innerText = news.createdAt ? new Date(news.createdAt).toLocaleString('ja-JP', { year: 'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
-        modalContent.innerHTML = news.content ? news.content.replace(/\n/g, '<br>') : '';
-
-        // メディアの表示設定
-        modalMediaContainer.innerHTML = '';
-        modalMediaContainer.classList.remove('hidden');
-
-        if (news.youtubeId) {
-            modalMediaContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${news.youtubeId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-        } else if (news.imageUrl) {
-            modalMediaContainer.innerHTML = `<img src="${news.imageUrl}" alt="News Image">`;
-        } else {
-            modalMediaContainer.classList.add('hidden'); // 画像も動画もない場合は非表示
+                    </article>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
         }
 
-        // モーダルを表示
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // 背景スクロールを防止
-    }
-
-    // モーダルを閉じる処理
-    function closeModal() {
-        modal.style.display = 'none';
-        modalMediaContainer.innerHTML = ''; // iframeの再生を止めるため中身を消す
-        document.body.style.overflow = 'auto'; // スクロール再開
-    }
-
-    modalCloseBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal(); // 背景クリックで閉じる
-    });
-
-    searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value.trim();
-        applyFiltersAndRender();
-    });
-
-    categoryBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            categoryBtns.forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            currentCategory = e.target.getAttribute('data-category');
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
             applyFiltersAndRender();
         });
-    });
 
-    // 認証とデータ取得
-    const initAuth = async () => {
-        try {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-        } catch (error) {
-            console.error("認証エラー:", error);
-            loadingEl.innerHTML = `<p class="text-red-600 font-bold bg-white bg-opacity-80 p-4 rounded-xl inline-block">Firebaseの認証に失敗しました。</p>`;
-        }
-    };
-    initAuth();
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            loadingText.innerText = "ニュースを受信中...";
-            
-            if (unsubscribeSnapshot) unsubscribeSnapshot();
-            
-            const newsRef = collection(db, 'artifacts', appId, 'public', 'data', 'news');
-            unsubscribeSnapshot = onSnapshot(newsRef, (snapshot) => {
-                loadingEl.classList.add('hidden');
-                
-                allNews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                allNews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentCategory = e.target.getAttribute('data-category');
                 applyFiltersAndRender();
-            }, (error) => {
-                console.error("データ取得エラー:", error);
-                loadingEl.innerHTML = `<p class="text-red-600 font-bold bg-white bg-opacity-80 p-4 rounded-xl inline-block">データの読み込みに失敗しました。</p>`;
             });
-        } else {
-            loadingEl.innerHTML = `<p class="text-red-600 font-bold">データベースへの接続が切断されました。</p>`;
-        }
-    });
+        });
 
-</script>
+        // 認証状態の監視とデータ取得開始
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadingText.innerText = "ニュースを受信中...";
+                
+                // 既存のリスナーがあれば解除
+                if (unsubscribeSnapshot) unsubscribeSnapshot();
+
+                const newsRef = collection(db, newsCollectionPath);
+                unsubscribeSnapshot = onSnapshot(newsRef, (snapshot) => {
+                    loadingEl.classList.add('hidden');
+                    
+                    allNews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    allNews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    
+                    applyFiltersAndRender();
+                }, (error) => {
+                    console.error("データ取得エラー:", error);
+                    loadingEl.innerHTML = `<p class="text-red-600 font-bold bg-white bg-opacity-80 p-4 rounded-xl inline-block">データの読み込みに失敗しました。<br><span class="text-sm text-gray-700">権限がないか設定が間違っています (${error.code})</span></p>`;
+                });
+            } else {
+                loadingEl.innerHTML = `<p class="text-red-600 font-bold">データベースへの接続が切断されました。</p>`;
+            }
+        });
+
+        // 匿名認証でログイン（※Firestoreルールで要許可）
+        signInAnonymously(auth).catch((error) => {
+            console.error("認証エラー:", error);
+            loadingEl.innerHTML = `<p class="text-red-600 font-bold bg-white bg-opacity-80 p-4 rounded-xl inline-block">Firebaseの認証に失敗しました。<br>設定を確認してください。</p>`;
+        });
+    </script>
 </body>
 </html>
