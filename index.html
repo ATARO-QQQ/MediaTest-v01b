@@ -1,218 +1,433 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>News Portal - 最新情報</title>
-  <!-- Tailwind CSSをCDNから読み込み -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    
-    body {
-      
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      font-family: 'Segoe UI', Meiryo, system-ui, -apple-system, sans-serif;
-      color: #333;
-    }
-    
-    
-    .aero-panel {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-      border-radius: 12px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aero News Suite</title>
+    <!-- Tailwind CSS を CDN から読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Windows Aero / Glassmorphism 風のスタイル */
+        body {
+            /* 美しい青空やオーロラのような背景グラデーション */
+            background: linear-gradient(135deg, #8bc6ec 0%, #9599e2 100%);
+            background-attachment: fixed;
+            font-family: "Segoe UI", "Meiryo", "メイリオ", sans-serif;
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
 
-    .aero-header {
-      background: rgba(255, 255, 255, 0.4);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
+        /* ヘッダーのガラス効果 */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.9);
+            border-left: 1px solid rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
 
-    .news-content {
-      white-space: pre-wrap; /* 改行を反映 */
-      line-height: 1.6;
-    }
+        .glass-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
 
-    .media-container {
-      border-radius: 8px;
-      overflow: hidden;
-      margin-top: 1rem;
-      border: 1px solid rgba(255,255,255,0.5);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-  </style>
+        /* ニュースカードのガラス効果 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.9);
+            border-left: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.65);
+        }
+
+        /* おすすめカード（少し目立たせる） */
+        .recommended-card {
+            background: rgba(255, 248, 220, 0.6); /* ほんのり黄色みがかったガラス */
+            border-top: 1px solid rgba(255, 255, 255, 1);
+        }
+
+        /* タイトルの輝き効果 */
+        .aero-title {
+            color: #0f3057;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.9);
+        }
+
+        /* コントロール（検索・タブ） */
+        .glass-input {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 8px 16px;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 8px rgba(100, 150, 255, 0.6), inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .category-btn {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+        .category-btn.active {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: #0056b3;
+            border-color: #fff;
+        }
+
+        /* メディアエリア */
+        .media-container {
+            width: 100%;
+            height: 180px;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            position: relative;
+        }
+        .recommended-card .media-container {
+            height: 220px; /* おすすめは少し大きく */
+        }
+        .media-container img, .media-container iframe {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* カテゴリーバッジ */
+        .category-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* スクロールバー */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(255,255,255,0.6); 
+            border-radius: 5px; 
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.8); }
+    </style>
 </head>
-<body class="antialiased">
+<body>
 
-  
-  <header class="aero-header fixed top-0 w-full z-50 transition-all duration-300">
-    <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-light tracking-wider text-blue-900">
-        <span class="font-bold">News</span>Portal
-      </h1>
-      <nav class="text-sm text-gray-600">
-        Updated Real-time
-      </nav>
-    </div>
-  </header>
+    <!-- ヘッダー -->
+    <header class="glass-panel glass-header py-4 px-6 mb-6">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h1 class="text-2xl md:text-3xl font-bold aero-title flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" />
+                </svg>
+                Aero News Suite
+            </h1>
+            <div class="text-sm font-semibold text-gray-800 bg-white bg-opacity-40 px-3 py-1 rounded-full border border-white">
+                <span id="current-date"></span>
+            </div>
+        </div>
+    </header>
 
-  
-  <main class="pt-24 pb-12 px-4 max-w-4xl mx-auto">
-    
-    <div class="mb-8">
-      <h2 class="text-xl font-medium text-gray-700 mb-2">最新のニュース</h2>
-      <p class="text-sm text-gray-500">運営からのお知らせや最新情報を配信しています。</p>
-    </div>
-
-   
-    <div id="newsContainer" class="space-y-6">
-      <div id="loadingIndicator" class="text-center py-10 text-gray-500">
-        <svg class="animate-spin h-8 w-8 mx-auto mb-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        情報を取得しています...
-      </div>
-    </div>
-
-  </main>
-
-  
-  <template id="newsCardTemplate">
-    <article class="aero-panel p-6 transition-transform hover:-translate-y-1 hover:shadow-lg duration-300">
-      <header class="mb-4">
-        <time class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1 block date-display"></time>
-        <h3 class="text-2xl font-bold text-gray-800 leading-tight title-display"></h3>
-      </header>
-      
-      <div class="text-gray-700 news-content content-display mb-4"></div>
-
-      
-      <div class="media-container image-area hidden">
-        <img src="" alt="ニュース画像" class="w-full h-auto object-cover max-h-96 image-display">
-      </div>
-
-
-      <div class="media-container video-area hidden aspect-video relative">
-        <iframe src="" class="absolute top-0 left-0 w-full h-full video-display" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-    </article>
-  </template>
-
-  <script>
-    // Cloudflare WorkersのAPIエンドポイント（実際のものに書き換えてください）
-    const API_ENDPOINT = 'https://your-api-worker.your-subdomain.workers.dev/api/news';
-
-    // 日付フォーマット関数
-    function formatDate(isoString) {
-      const date = new Date(isoString);
-      return `${date.getFullYear()}年${String(date.getMonth() + 1).padStart(2, '0')}月${String(date.getDate()).padStart(2, '0')}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-    }
-
-    // ニュースを描画する関数
-    function renderNews(newsDataArray) {
-      const container = document.getElementById('newsContainer');
-      const template = document.getElementById('newsCardTemplate');
-      const loading = document.getElementById('loadingIndicator');
-
-      if (loading) loading.remove();
-
-      if (newsDataArray.length === 0) {
-        container.innerHTML = '<div class="aero-panel p-8 text-center text-gray-500">現在、ニュースはありません。</div>';
-        return;
-      }
-
-      newsDataArray.forEach(news => {
-        const clone = template.content.cloneNode(true);
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         
-        clone.querySelector('.date-display').textContent = formatDate(news.createdAt);
-        clone.querySelector('.title-display').textContent = news.title;
-        clone.querySelector('.content-display').textContent = news.content;
+        <!-- コントロールバー（検索＆カテゴリー） -->
+        <div class="glass-panel rounded-2xl p-4 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- カテゴリータブ -->
+            <div id="category-tabs" class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                <button class="category-btn active" data-category="all">すべて</button>
+                <button class="category-btn" data-category="総合">総合</button>
+                <button class="category-btn" data-category="IT・テック">IT・テック</button>
+                <button class="category-btn" data-category="エンタメ">エンタメ</button>
+                <button class="category-btn" data-category="スポーツ">スポーツ</button>
+            </div>
+            
+            <!-- 検索バー -->
+            <div class="w-full md:w-64 relative">
+                <input type="text" id="search-input" placeholder="ニュースを検索..." class="glass-input w-full pl-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
 
-        // 画像の処理
-        if (news.imageUrl && news.imageUrl.trim() !== '') {
-          const imgArea = clone.querySelector('.image-area');
-          const img = clone.querySelector('.image-display');
-          img.src = news.imageUrl;
-          // エラー時のフォールバック
-          img.onerror = () => { imgArea.style.display = 'none'; };
-          imgArea.classList.remove('hidden');
+        <div id="loading" class="text-center py-20">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+            <p class="aero-title text-lg font-bold">ニュースを受信中...</p>
+        </div>
+
+        <!-- おすすめエリア (検索時や別カテゴリー選択時は非表示にする) -->
+        <section id="recommended-section" class="mb-12 hidden">
+            <h2 class="text-2xl font-bold aero-title mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                ピックアップ
+            </h2>
+            <div id="recommended-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- おすすめカード挿入用 -->
+            </div>
+        </section>
+
+        <!-- 通常のニュース一覧エリア -->
+        <section id="latest-section" class="hidden">
+            <h2 id="list-title" class="text-2xl font-bold aero-title mb-4">📰 最新ニュース</h2>
+            <div id="news-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- ニュースカード挿入用 -->
+            </div>
+            
+            <div id="empty-state" class="text-center py-16 hidden glass-panel rounded-2xl">
+                <p class="text-gray-700 text-lg font-bold">該当するニュースが見つかりません。</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Firebase SDK (ES Modules) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // 【重要】ご自身のFirebase設定に書き換えてください
+        // ==========================================
+        const defaultFirebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        let firebaseConfig = defaultFirebaseConfig;
+        if (typeof __firebase_config !== 'undefined') {
+            firebaseConfig = JSON.parse(__firebase_config);
         }
 
-        // 動画の処理 (YouTubeなどのiframe想定)
-        if (news.videoUrl && news.videoUrl.trim() !== '') {
-          const videoArea = clone.querySelector('.video-area');
-          const iframe = clone.querySelector('.video-display');
-          
-          // YouTubeの通常URLを埋め込み用URLに変換する簡易ロジック
-          let embedUrl = news.videoUrl;
-          if(embedUrl.includes('youtube.com/watch?v=')) {
-              embedUrl = embedUrl.replace('watch?v=', 'embed/');
-          } else if(embedUrl.includes('youtu.be/')) {
-              embedUrl = embedUrl.replace('youtu.be/', 'youtube.com/embed/');
-          }
-          
-          iframe.src = embedUrl;
-          videoArea.classList.remove('hidden');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'my-custom-news';
+        const newsCollectionPath = typeof __app_id !== 'undefined' 
+            ? `artifacts/${appId}/public/data/news` 
+            : 'news';
+
+        // UI要素の取得
+        const loadingEl = document.getElementById('loading');
+        const recommendedSection = document.getElementById('recommended-section');
+        const recommendedGrid = document.getElementById('recommended-grid');
+        const latestSection = document.getElementById('latest-section');
+        const newsGrid = document.getElementById('news-grid');
+        const emptyState = document.getElementById('empty-state');
+        const searchInput = document.getElementById('search-input');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const listTitle = document.getElementById('list-title');
+
+        // アプリケーションの状態（State）
+        let allNews = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // 日付表示
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+
+        // 初期化処理
+        async function init() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const { signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Firestoreからリアルタイムでデータを全件取得
+                const newsRef = collection(db, newsCollectionPath);
+                onSnapshot(newsRef, (snapshot) => {
+                    loadingEl.classList.add('hidden');
+                    
+                    allNews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    // 日付の降順（新しい順）にソート
+                    allNews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    
+                    applyFiltersAndRender();
+                }, (error) => {
+                    console.error("データ取得エラー:", error);
+                    loadingEl.innerHTML = `<p class="text-red-600 font-bold">データの読み込みに失敗しました。</p>`;
+                });
+
+            } catch (error) {
+                console.error("認証エラー:", error);
+                loadingEl.innerHTML = `<p class="text-red-600 font-bold">システムに接続できません。</p>`;
+            }
         }
 
-        container.appendChild(clone);
-      });
-    }
+        // 状態に基づいてニュースをフィルタリングし、描画する
+        function applyFiltersAndRender() {
+            let filteredNews = allNews;
 
-    // APIからデータを取得する関数
-    async function fetchNews() {
-      try {
-        /* ==== 実際の実装ではこのブロックのコメントアウトを外します ====
-        const response = await fetch(API_ENDPOINT);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        // データの降順ソート（最新を上に）
-        data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        renderNews(data);
-        return;
-        ========================================================= */
+            // 1. カテゴリーで絞り込み
+            if (currentCategory !== 'all') {
+                filteredNews = filteredNews.filter(n => n.category === currentCategory);
+            }
 
-        // デモ用のモックデータ（API接続前のUI確認用）
-        await new Promise(resolve => setTimeout(resolve, 800)); // 通信をシミュレート
-        const mockData = [
-          {
-            id: 1,
-            title: "新デザインのニュースポータルを公開しました！",
-            content: "皆様により快適に情報を取得していただくため、Windows Aeroをモチーフにした白基調のすっきりとしたデザインにリニューアルいたしました。\n\nすりガラス効果を取り入れ、視認性と美しさを両立しています。今後は画像や動画を用いたリッチなコンテンツも配信予定です。",
-            imageUrl: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            videoUrl: "",
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: 2,
-            title: "【動画あり】次世代のWeb技術に関するカンファレンス開催",
-            content: "Cloudflare D1とWorkersを用いたエッジコンピューティングの実践例について解説するカンファレンスが開催されました。\nデータベースの構築からフロントエンドの展開まで、サーバーレスで完結するモダンな開発手法が話題となりました。",
-            imageUrl: "",
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // サンプル動画
-            createdAt: new Date(Date.now() - 86400000).toISOString() // 1日前
-          }
-        ];
-        renderNews(mockData);
+            // 2. 検索キーワードで絞り込み
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filteredNews = filteredNews.filter(n => 
+                    n.title.toLowerCase().includes(q) || 
+                    (n.content && n.content.toLowerCase().includes(q))
+                );
+            }
 
-      } catch (error) {
-        console.error('ニュースの取得に失敗しました:', error);
-        document.getElementById('newsContainer').innerHTML = `
-          <div class="aero-panel p-8 text-center text-red-500">
-            データの読み込みに失敗しました。時間をおいて再度お試しください。
-          </div>
-        `;
-      }
-    }
+            latestSection.classList.remove('hidden');
 
-    // ページ読み込み時にニュースを取得
-    document.addEventListener('DOMContentLoaded', fetchNews);
-  </script>
+            // --- おすすめエリアの表示制御 ---
+            // 「すべて」タブかつ「検索キーワードなし」の時だけおすすめを表示する
+            if (currentCategory === 'all' && !searchQuery) {
+                // isRecommendedフラグがtrueのものだけを抽出
+                const recommendedNews = allNews.filter(n => n.isRecommended === true);
+                if (recommendedNews.length > 0) {
+                    recommendedSection.classList.remove('hidden');
+                    renderCards(recommendedNews, recommendedGrid, true);
+                } else {
+                    recommendedSection.classList.add('hidden');
+                }
+                listTitle.innerText = "📰 最新ニュース";
+            } else {
+                recommendedSection.classList.add('hidden'); // おすすめ非表示
+                listTitle.innerText = searchQuery ? `🔍 「${searchQuery}」の検索結果` : `📰 ${currentCategory}のニュース`;
+            }
+
+            // --- 一覧エリアの表示制御 ---
+            if (filteredNews.length === 0) {
+                newsGrid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                newsGrid.classList.remove('hidden');
+                renderCards(filteredNews, newsGrid, false);
+            }
+        }
+
+        // カードのHTML生成・描画共通関数
+        function renderCards(newsList, container, isRecommendedCard) {
+            container.innerHTML = '';
+            
+            newsList.forEach(news => {
+                const dateStr = news.createdAt 
+                    ? new Date(news.createdAt).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) 
+                    : '';
+                const categoryStr = news.category || '未分類';
+                const cardClass = isRecommendedCard ? 'glass-card recommended-card' : 'glass-card';
+
+                // メディアHTMLの生成
+                let mediaHtml = '';
+                if (news.youtubeId) {
+                    mediaHtml = `
+                        <div class="media-container">
+                            <span class="category-badge">${categoryStr}</span>
+                            <iframe src="https://www.youtube.com/embed/${news.youtubeId}" frameborder="0" allowfullscreen></iframe>
+                        </div>`;
+                } else if (news.imageUrl) {
+                    mediaHtml = `
+                        <div class="media-container">
+                            <span class="category-badge">${categoryStr}</span>
+                            <img src="${news.imageUrl}" alt="Image" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22200%22%20viewBox%3D%220%200%20400%20200%22%3E%3Crect%20fill%3D%22rgba(255,255,255,0.3)%22%20width%3D%22400%22%20height%3D%22200%22%2F%3E%3Ctext%20fill%3D%22%23555%22%20font-family%3D%22sans-serif%22%20font-size%3D%2220%22%20dy%3D%2210.5%22%20font-weight%3D%22bold%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                        </div>`;
+                } else {
+                    mediaHtml = `
+                        <div class="media-container">
+                            <span class="category-badge">${categoryStr}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" />
+                            </svg>
+                        </div>`;
+                }
+
+                const formattedContent = news.content ? news.content.replace(/\n/g, '<br>') : '';
+                // 記事の長さを制限（UI崩れ防止）
+                const displayContent = formattedContent.length > 150 ? formattedContent.substring(0, 150) + '...' : formattedContent;
+
+                const cardHtml = `
+                    <article class="${cardClass}">
+                        ${mediaHtml}
+                        <div class="p-5 flex-1 flex flex-col">
+                            <span class="text-xs font-bold text-blue-800 mb-1">${dateStr}</span>
+                            <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-2 leading-tight">${news.title}</h2>
+                            <p class="text-gray-700 text-sm leading-relaxed flex-1">${displayContent}</p>
+                            <div class="mt-4 pt-3 border-t border-white border-opacity-50 text-right">
+                                <button class="text-sm text-blue-700 hover:text-blue-900 font-bold transition-colors">続きを読む ＞</button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        // --- イベントリスナーの登録 ---
+
+        // 検索入力時のイベント
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            applyFiltersAndRender();
+        });
+
+        // カテゴリータブのクリックイベント
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // アクティブ状態の切り替え
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                currentCategory = e.target.getAttribute('data-category');
+                applyFiltersAndRender();
+            });
+        });
+
+        // アプリ起動
+        init();
+    </script>
 </body>
 </html>
